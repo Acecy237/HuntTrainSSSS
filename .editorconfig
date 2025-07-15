@@ -2,6 +2,7 @@ root = true
 # top-most EditorConfig file
 
 [*]
+end_of_line = crlf
 charset = utf-8
 
 end_of_line = lf
