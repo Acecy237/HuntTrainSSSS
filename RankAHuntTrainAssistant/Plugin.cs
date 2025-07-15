@@ -1,7 +1,5 @@
 using Dalamud.Game.Command;
-using Dalamud.IoC;
 using Dalamud.Plugin;
-using System.IO;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin.Services;
 using ECommons;
@@ -12,13 +10,6 @@ namespace RankAHuntTrainAssistant;
 
 public sealed class Plugin : IDalamudPlugin
 {
-    [PluginService] internal static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
-    [PluginService] internal static ITextureProvider TextureProvider { get; private set; } = null!;
-    [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
-    [PluginService] internal static IClientState ClientState { get; private set; } = null!;
-    [PluginService] internal static IDataManager DataManager { get; private set; } = null!;
-    [PluginService] internal static IPluginLog Log { get; private set; } = null!;
-
     private const string CommandName = "/aht";
 
     // 用于读取和保存插件配置
@@ -33,7 +24,7 @@ public sealed class Plugin : IDalamudPlugin
     public Plugin(IDalamudPluginInterface pluginInterface) 
     {
         ECommonsMain.Init(pluginInterface, this);
-        Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+        Configuration = Svc.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
 
         ConfigWindow = new ConfigWindow(this);
         MainWindow = new MainWindow(this);
@@ -41,16 +32,16 @@ public sealed class Plugin : IDalamudPlugin
         WindowSystem.AddWindow(ConfigWindow);
         WindowSystem.AddWindow(MainWindow);
 
-        CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
+        Svc.Commands.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
             HelpMessage = "打开设置"
         });
 
-        PluginInterface.UiBuilder.Draw += DrawUI;
+        Svc.PluginInterface.UiBuilder.Draw += DrawUI;
 
-        PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUI;
+        Svc.PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUI;
 
-        PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
+        Svc.PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
     }
 
     public void Dispose()
@@ -61,7 +52,7 @@ public sealed class Plugin : IDalamudPlugin
         MainWindow.Dispose();
         ECommonsMain.Dispose();
 
-        CommandManager.RemoveHandler(CommandName);
+        Svc.Commands.RemoveHandler(CommandName);
     }
 
     private void OnCommand(string command, string args)
