@@ -4,11 +4,11 @@ using Dalamud.Plugin;
 using System.IO;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin.Services;
-using SamplePlugin.Windows;
-using Ecommands;
+using RankAHuntTrainAssistant;
+using ECommons;
 
 
-namespace SamplePlugin;
+namespace RankAHuntTrainAssistant;
 
 public sealed class Plugin : IDalamudPlugin
 {
@@ -19,11 +19,11 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static IDataManager DataManager { get; private set; } = null!;
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
 
-    private const string CommandName = "/pmycommand";
+    private const string CommandName = "/aht";
 
     public Configuration Configuration { get; init; }
 
-    public readonly WindowSystem WindowSystem = new("SamplePlugin");
+    public readonly WindowSystem WindowSystem = new("RankAHuntTrainAssistant");
     private ConfigWindow ConfigWindow { get; init; }
     private MainWindow MainWindow { get; init; }
 
@@ -42,7 +42,7 @@ public sealed class Plugin : IDalamudPlugin
 
         CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
-            HelpMessage = "A useful message to display in /xlhelp"
+            HelpMessage = "/aht 打开设置"
         });
 
         PluginInterface.UiBuilder.Draw += DrawUI;
