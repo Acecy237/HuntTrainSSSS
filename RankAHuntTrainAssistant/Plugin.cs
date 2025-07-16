@@ -1,9 +1,12 @@
 using Dalamud.Game.Command;
-using Dalamud.Plugin;
 using Dalamud.Interface.Windowing;
+using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using ECommons;
-using ECommons.DalamudServices; 
+using ECommons.DalamudServices;
+using ECommons.EzIpcManager;
+using RankAHuntTrainAssistant.Services;
+using RankAHuntTrainAssistant.windows;
 
 
 namespace RankAHuntTrainAssistant;
@@ -13,7 +16,7 @@ public sealed class Plugin : IDalamudPlugin
     private const string CommandName = "/aht";
 
     // 用于读取和保存插件配置
-    public Configuration Configuration { get; init; }
+    public static Configuration Configuration = new();
 
     // UI窗口管理器
     public readonly WindowSystem WindowSystem = new("RankAHuntTrainAssistant");
@@ -24,6 +27,8 @@ public sealed class Plugin : IDalamudPlugin
     public Plugin(IDalamudPluginInterface pluginInterface) 
     {
         ECommonsMain.Init(pluginInterface, this);
+        IpcService.InitAll();
+
         Configuration = Svc.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
 
         ConfigWindow = new ConfigWindow(this);

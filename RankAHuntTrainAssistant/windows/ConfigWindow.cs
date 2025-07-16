@@ -3,7 +3,7 @@ using System.Numerics;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 
-namespace RankAHuntTrainAssistant;
+namespace RankAHuntTrainAssistant.windows;
 
 public class ConfigWindow : Window, IDisposable
 {
@@ -11,7 +11,7 @@ public class ConfigWindow : Window, IDisposable
 
     public ConfigWindow(Plugin plugin) : base("RankAHuntTrainAssistant###ahtcfg", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
-        Configuration = plugin.Configuration;
+        Configuration = Plugin.Configuration;
     }
 
     public void Dispose() { }
