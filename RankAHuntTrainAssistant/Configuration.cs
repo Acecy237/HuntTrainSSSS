@@ -3,6 +3,7 @@ using Dalamud.Plugin;
 using ECommons.DalamudServices;
 using System;
 using System.Collections.Generic;
+using static RankAHuntTrainAssistant.StaticData.ExpansionData;
 
 namespace RankAHuntTrainAssistant;
 
@@ -11,10 +12,10 @@ public class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 0;
 
-    public bool EnableCrossWorld = false;
-    public Dictionary<string, bool> WorldToggles = new();
-    public Dictionary<string, bool> VersionSelections = new();
-    public Dictionary<string, Dictionary<string, bool>> MapSelections = new();
+    public bool EnableCrossWorld { get; set; } = false;
+    public Dictionary<string, bool> SelectedWorlds { get; set; } = new();
+    public Dictionary<Expansion, bool> SelectedExpansion { get; set; } = new();
+    public Dictionary<Expansion, Dictionary<string, bool>> SelectedMap { get; set; } = new();
 
     public void Save() => Svc.PluginInterface.SavePluginConfig(this);
 }

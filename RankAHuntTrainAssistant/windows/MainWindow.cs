@@ -18,42 +18,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using static FFXIVClientStructs.FFXIV.Client.Network.NetworkModuleProxy.Delegates;
+using static RankAHuntTrainAssistant.StaticData.ExpansionData;
 
 namespace RankAHuntTrainAssistant.Windows;
 
 public class MainWindow : Window, IDisposable
 {
     private bool enableCrossWorld = false;
+    private Dictionary<string, bool> selectedWorld = new();
+    private Dictionary<Expansion, bool> selectedExpansion = new();
+    private Dictionary<Expansion, Dictionary<string, bool>> selectedMap = new();
 
     public MainWindow(Plugin plugin)
         : base("RankAHuntTrainAssistant##aht", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
-        LoadFromConfig();
+        LoadConfig();
     }
 
     public void Dispose() {
     
     }
 
-    private void LoadFromConfig()
-    {      
-
-    }
-
-    private void SaveConfig()
-    {
-        Plugin.Configuration.Save();
-    }
-
     public override void Draw()
     {
         DrawInfoSection();
         DrawFunctionSection();
-        if (enableCrossWorld)
+        if (enableCrossWorld && MapManager.WorldsList != null)
         {
             DrawCrossWorldSelector();
         }
-        DrawVersionSelector();
+        DrawMapSelector();
         if (ImGui.Button("功能测试"))
         {
             Svc.Chat.Print("WorldId: " + Svc.ClientState.LocalPlayer?.CurrentWorld.RowId);
@@ -97,16 +91,135 @@ public class MainWindow : Window, IDisposable
     private void DrawCrossWorldSelector()
     {
         ImGui.TextUnformatted("选择服务器:");
-        if (ImGui.BeginTable("WorldTable", 3))
+
+        bool allSelected = MapManager.WorldsList.All(w => selectedWorld.ContainsKey(w) && selectedWorld[w]);
+
+        ImGui.SameLine();
+        if (ImGui.SmallButton(allSelected ? "取消全选" : "全选"))
         {
-
+            foreach (var world in MapManager.WorldsList)
+            {
+                selectedWorld[world] = !allSelected;
+            }
+            SaveConfig();
         }
-        
+
+        using var table = ImRaii.Table("WorldTable", 3);
+        if (table)
+        {
+            foreach (var world in MapManager.WorldsList)
+            {
+                ImGui.TableNextColumn();
+
+                if (!selectedWorld.ContainsKey(world))
+                    selectedWorld[world] = false;
+
+                bool isChecked = selectedWorld[world];
+                if (ImGui.Checkbox(world, ref isChecked))
+                {
+                    selectedWorld[world] = isChecked;
+                    SaveConfig();
+                }
+            }
+        }
     }
 
-    private void DrawVersionSelector()
+    private void DrawMapSelector()
     {
+        ImGui.TextUnformatted("选择版本:");
+        ImGui.Spacing();
 
+        foreach (Expansion exp in Enum.GetValues(typeof(Expansion)))
+        {
+            if (!selectedExpansion.TryGetValue(exp, out var isChecked))
+            {
+                isChecked = false;
+                selectedExpansion[exp] = false;
+            }
+
+            if (ImGui.Checkbox(exp.ToString(), ref isChecked))
+            {
+                selectedExpansion[exp] = isChecked;
+                SaveConfig();
+            }
+
+            if (selectedExpansion[exp])
+            {
+                var mapList = MapData.ExpansionToMapData.TryGetValue(exp, out var list) ? list : null;
+                if (mapList == null) continue;
+
+                if (!selectedMap.TryGetValue(exp, out var value))
+                {
+                    value = new();
+                    selectedMap[exp] = value;
+                    foreach (var map in mapList)
+                    {
+                        selectedMap[exp][map.Name] = true;
+                    }
+                }
+
+                ImGui.SameLine();
+
+                bool allSelected = value.Count > 0 && value.All(kvp => kvp.Value);
+
+                if (ImGui.SmallButton(allSelected ? $"取消全选##{exp}" : $"全选##{exp}"))
+                {
+                    foreach (var mapName in value.Keys.ToList())
+                    {
+                        value[mapName] = !allSelected;
+                    }
+                    SaveConfig();
+                }
+
+                ImGui.Indent();
+                ImGui.Spacing();
+
+                if (ImGui.BeginTable($"MapTable_{exp}", 3))
+                {
+                    foreach (var map in mapList)
+                    {
+                        ImGui.TableNextColumn();
+
+                        if (!selectedMap[exp].ContainsKey(map.Name))
+                            selectedMap[exp][map.Name] = false;
+
+                        bool mapChecked = value[map.Name];
+                        if (ImGui.Checkbox(map.Name, ref mapChecked))
+                        {
+                            selectedMap[exp][map.Name] = mapChecked;
+                            SaveConfig();
+                        }
+                    }
+                    ImGui.EndTable();
+                }
+                ImGui.Unindent();
+            }
+        }
     }
 
+    private void SaveConfig()
+    {
+        Plugin.Configuration.EnableCrossWorld = enableCrossWorld;
+        Plugin.Configuration.SelectedWorlds = selectedWorld;
+        Plugin.Configuration.SelectedExpansion = selectedExpansion;
+        Plugin.Configuration.SelectedMap = selectedMap;
+        Plugin.Configuration.Save();
+    }
+
+    private void LoadConfig()
+    {
+        enableCrossWorld = Plugin.Configuration.EnableCrossWorld;
+
+        selectedWorld = Plugin.Configuration.SelectedWorlds
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        selectedExpansion = Plugin.Configuration.SelectedExpansion
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        selectedMap = Plugin.Configuration.SelectedMap
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => new Dictionary<string, bool>(kvp.Value)
+            );
+    }
 }

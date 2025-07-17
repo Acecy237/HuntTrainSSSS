@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using static RankAHuntTrainAssistant.StaticData.ExpansionData;
 
 namespace RankAHuntTrainAssistant.StaticData;
@@ -12,7 +13,7 @@ public class Map
 }
 public class MapData
 {
-    public static readonly Dictionary<Expansion, List<Map>> VersionToMapData = new()
+    public static readonly Dictionary<Expansion, List<Map>> ExpansionToMapData = new()
     {
         [Expansion.暗影之逆焰] = new List<Map>
         {
@@ -282,4 +283,24 @@ public class MapData
                 } },
         },
     };
+
+    public static List<string> GetMapNamesByExpansion(Expansion expansion)
+    {
+        if (ExpansionToMapData.TryGetValue(expansion, out var maps))
+        {
+            return maps.Select(map => map.Name).ToList();
+        }
+        return new List<string>();
+    }
+    public static Map? GetMapByName(string name)
+    {
+        foreach (var mapList in ExpansionToMapData.Values)
+        {
+            var map = mapList.FirstOrDefault(m => m.Name == name);
+            if (map != null)
+                return map;
+        }
+        return null;
+    }
+
 }
