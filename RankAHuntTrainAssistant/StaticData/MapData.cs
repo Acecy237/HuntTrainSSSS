@@ -1,25 +1,20 @@
 using System.Collections.Generic;
-using System.Linq;
+using static RankAHuntTrainAssistant.StaticData.ExpansionData;
 
-namespace RankAHuntTrainAssistant.Data;
+namespace RankAHuntTrainAssistant.StaticData;
 
-public static class MapMetaData
+public class Map
 {
-    public static readonly string[] VersionOptions = {
-        "暗影之逆焰", "晓月之终途", "金曦之遗辉"
-    };
-
-    public class MapMeta
+    public string Name { get; set; } = "";
+    public string AetheryteName { get; set; } = "";
+    public int MapId { get; set; }
+    public List<(float X, float Y, float Z)> RankASpawns { get; set; } = new();
+}
+public class MapData
+{
+    public static readonly Dictionary<Expansion, List<Map>> VersionToMapData = new()
     {
-        public string Name { get; set; } = "";
-        public string AetheryteName { get; set; } = "";
-        public int MapId { get; set; }
-        public List<(float X, float Y, float Z)> RankASpawns { get; set; } = new();
-    }
-
-    public static readonly Dictionary<string, List<MapMeta>> VersionToMapMeta = new()
-    {
-        ["暗影之逆焰"] = new List<MapMeta>
+        [Expansion.暗影之逆焰] = new List<Map>
         {
             new() { Name = "雷克兰德", AetheryteName = "乔布要塞", MapId = 813, RankASpawns = new()
                 {
@@ -142,7 +137,7 @@ public static class MapMetaData
                 } },
         },
 
-        ["晓月之终途"] = new List<MapMeta>
+        [Expansion.晓月之终途] = new List<Map>
         {
             new() { Name = "迷津", AetheryteName = "公堂保管院", MapId = 956, RankASpawns = new()
                 {
@@ -222,7 +217,7 @@ public static class MapMetaData
                 } },
         },
 
-        ["金曦之遗辉"] = new List<MapMeta>
+        [Expansion.金曦之遗辉] = new List<Map>
         {
             new() { Name = "奥阔帕恰山", AetheryteName = "瓦丘恩佩洛", MapId = 1187, RankASpawns = new()
                 {
@@ -287,21 +282,4 @@ public static class MapMetaData
                 } },
         },
     };
-
-    public static readonly HashSet<uint> mobsNameId = new()
-    {
-        13362, 13361, 13443, 13442, 12753, 12692, 13401, 13400, 13158, 13157, 13436, 13435,
-        10624, 10623, 10626, 10625, 10628, 10627, 10630, 10629, 10632, 10631, 10634, 10633,
-        8912, 8911, 8902, 8901, 8907, 8906, 8655, 8654, 8892, 8891, 8897, 8896,
-    };
-
-    public static IEnumerable<string> GetMapNames(string version)
-        => VersionToMapMeta.TryGetValue(version, out var list)
-            ? list.Select(m => m.Name)
-            : Enumerable.Empty<string>();
-
-    public static MapMeta? GetMapMeta(string version, string mapName)
-        => VersionToMapMeta.TryGetValue(version, out var maps)
-            ? maps.FirstOrDefault(m => m.Name == mapName)
-            : null;
 }

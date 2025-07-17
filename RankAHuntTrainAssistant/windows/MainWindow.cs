@@ -10,23 +10,20 @@ using FFXIVClientStructs;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
-using RankAHuntTrainAssistant.Data;
+using RankAHuntTrainAssistant.Manager;
 using RankAHuntTrainAssistant.Services;
+using RankAHuntTrainAssistant.StaticData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using static FFXIVClientStructs.FFXIV.Client.Network.NetworkModuleProxy.Delegates;
-using static RankAHuntTrainAssistant.Data.MapMetaData;
 
-namespace RankAHuntTrainAssistant.windows;
+namespace RankAHuntTrainAssistant.Windows;
 
 public class MainWindow : Window, IDisposable
 {
     private bool enableCrossWorld = false;
-    private Dictionary<string, bool> worldToggles = new();
-    private Dictionary<string, bool> versionsToggles = new();
-    private Dictionary<string, Dictionary<string, bool>> mapToggles = new();
 
     public MainWindow(Plugin plugin)
         : base("RankAHuntTrainAssistant##aht", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
@@ -37,30 +34,14 @@ public class MainWindow : Window, IDisposable
     public void Dispose() {
     
     }
+
     private void LoadFromConfig()
-    {
-        var config = Plugin.Configuration;
+    {      
 
-        enableCrossWorld = config.EnableCrossWorld;
-        worldToggles = new(config.WorldToggles);
-        versionsToggles = new(config.VersionSelections);
-
-        mapToggles = new();
-        foreach (var kv in config.MapSelections)
-        {
-            mapToggles[kv.Key] = new(kv.Value);
-        }
     }
+
     private void SaveConfig()
     {
-        Plugin.Configuration.EnableCrossWorld = enableCrossWorld;
-        Plugin.Configuration.WorldToggles = new(worldToggles);
-        Plugin.Configuration.VersionSelections = new(versionsToggles);
-        Plugin.Configuration.MapSelections = new();
-        foreach (var kv in mapToggles)
-        {
-            Plugin.Configuration.MapSelections[kv.Key] = new(kv.Value);
-        }
         Plugin.Configuration.Save();
     }
 
@@ -86,11 +67,11 @@ public class MainWindow : Window, IDisposable
         ImGui.PopTextWrapPos();
         ImGui.Separator();
         ImGui.TextUnformatted($"角色当前状态");
-        ImGui.TextUnformatted($"数据中心: {DCWorlds.DcName}");
-        ImGui.TextUnformatted($"服务器: {DCWorlds.WorldName}");
-        ImGui.TextUnformatted($"地图ID: {MapInfo.TerritoryId}");
-        ImGui.TextUnformatted($"地图: {MapInfo.MapName}");
-        ImGui.TextUnformatted($"分线: {MapInfo.InstanceName}");
+        ImGui.TextUnformatted($"数据中心: {MapManager.DcName}");
+        ImGui.TextUnformatted($"服务器: {MapManager.WorldName}");
+        ImGui.TextUnformatted($"地图: {MapManager.MapName}");
+        ImGui.TextUnformatted($"地图ID: {MapManager.MapId}");
+        ImGui.TextUnformatted($"分线: {MapManager.InstanceName}");
         ImGui.Separator();
     }
 
@@ -116,85 +97,16 @@ public class MainWindow : Window, IDisposable
     private void DrawCrossWorldSelector()
     {
         ImGui.TextUnformatted("选择服务器:");
-
         if (ImGui.BeginTable("WorldTable", 3))
         {
-            foreach (var world in DCWorlds.WorldsList)
-            {
-                ImGui.TableNextColumn();
 
-                if (!worldToggles.ContainsKey(world))
-                    worldToggles[world] = false;
-
-                bool value = worldToggles[world];
-                if (ImGui.Checkbox(world, ref value))
-                {
-                    worldToggles[world] = value;
-                    SaveConfig();
-                }
-            }
-            ImGui.EndTable();
         }
-        ImGui.Separator();
+        
     }
 
     private void DrawVersionSelector()
     {
-        ImGui.TextUnformatted("选择版本:");
-        ImGui.Spacing();
 
-        for (int i = 0; i < MapMetaData.VersionOptions.Length; i++)
-        {
-            var version = MapMetaData.VersionOptions[i];
-            if (!versionsToggles.TryGetValue(version, out var isChecked))
-            {
-                isChecked = false;
-                versionsToggles[version] = false;
-            }
-
-            if (ImGui.Checkbox(version, ref isChecked))
-            {
-                versionsToggles[version] = isChecked;
-                SaveConfig();
-            }
-
-            if (isChecked)
-            {
-                var mapNames = MapMetaData.GetMapNames(version).ToArray();
-
-                if (!mapToggles.ContainsKey(version))
-                {
-                    mapToggles[version] = new();
-                    foreach (var map in mapNames)
-                    {
-                        mapToggles[version][map] = false;
-                    }
-                }
-
-                ImGui.Indent();
-
-                if (ImGui.BeginTable($"MapTable_{version}", 3))
-                {
-                    foreach (var map in mapNames)
-                    {
-                        ImGui.TableNextColumn();
-
-                        if (!mapToggles[version].ContainsKey(map))
-                            mapToggles[version][map] = false;
-
-                        bool mapChecked = mapToggles[version][map];
-                        if (ImGui.Checkbox(map, ref mapChecked))
-                        {
-                            mapToggles[version][map] = mapChecked;
-                            SaveConfig();
-                        }
-                    }
-                    ImGui.EndTable();
-                }
-                ImGui.Unindent();
-            }
-        }
     }
-
 
 }

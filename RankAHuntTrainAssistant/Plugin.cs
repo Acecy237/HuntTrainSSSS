@@ -6,7 +6,7 @@ using ECommons;
 using ECommons.DalamudServices;
 using ECommons.EzIpcManager;
 using RankAHuntTrainAssistant.Services;
-using RankAHuntTrainAssistant.windows;
+using RankAHuntTrainAssistant.Windows;
 
 
 namespace RankAHuntTrainAssistant;

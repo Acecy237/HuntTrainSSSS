@@ -3,7 +3,7 @@ using System.Numerics;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 
-namespace RankAHuntTrainAssistant.windows;
+namespace RankAHuntTrainAssistant.Windows;
 
 public class ConfigWindow : Window, IDisposable
 {
