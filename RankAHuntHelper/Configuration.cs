@@ -3,9 +3,9 @@ using Dalamud.Plugin;
 using ECommons.DalamudServices;
 using System;
 using System.Collections.Generic;
-using static RankAHuntTrainAssistant.StaticData.ExpansionData;
+using static RankAHuntHelper.StaticData.ExpansionData;
 
-namespace RankAHuntTrainAssistant;
+namespace RankAHuntHelper;
 
 [Serializable]
 public class Configuration : IPluginConfiguration

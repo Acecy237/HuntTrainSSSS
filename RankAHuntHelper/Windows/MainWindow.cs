@@ -1,26 +1,13 @@
-using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
-using ECommons;
-using ECommons.Automation;
-using ECommons.Configuration;
-using ECommons.DalamudServices;
-using ECommons.Logging;
-using FFXIVClientStructs;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using ImGuiNET;
-using Lumina.Excel.Sheets;
-using RankAHuntTrainAssistant.Manager;
-using RankAHuntTrainAssistant.Services;
-using RankAHuntTrainAssistant.StaticData;
+using RankAHuntHelper.StaticData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using static FFXIVClientStructs.FFXIV.Client.Network.NetworkModuleProxy.Delegates;
-using static RankAHuntTrainAssistant.StaticData.ExpansionData;
+using static RankAHuntHelper.StaticData.ExpansionData;
 
-namespace RankAHuntTrainAssistant.Windows;
+namespace RankAHuntHelper.Windows;
 
 public class MainWindow : Window, IDisposable
 {
@@ -29,8 +16,8 @@ public class MainWindow : Window, IDisposable
     private Dictionary<Expansion, bool> selectedExpansion = new();
     private Dictionary<Expansion, Dictionary<string, bool>> selectedMap = new();
 
-    public MainWindow(Plugin plugin)
-        : base("RankAHuntTrainAssistant##aht", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
+    public MainWindow(RankAHuntHelper plugin)
+        : base("RankAHuntHelper##aht", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
         LoadConfig();
     }
@@ -43,29 +30,49 @@ public class MainWindow : Window, IDisposable
     {
         DrawInfoSection();
         DrawFunctionSection();
-        if (enableCrossWorld && MapManager.WorldsList != null)
+        if (enableCrossWorld && DataManager.PlayerLocation.WorldsList != null)
         {
             DrawCrossWorldSelector();
         }
         DrawMapSelector();
+
+        if (ImGui.Button("开始"))
+        {
+
+        }
+
+        ImGui.SameLine();
+
+        if (ImGui.Button("暂停"))
+        {
+
+        }
+
+        ImGui.SameLine();
+
+        if (ImGui.Button("停止"))
+        {
+
+        }
+
         if (ImGui.Button("功能测试"))
         {
-            Svc.Chat.Print("WorldId: " + Svc.ClientState.LocalPlayer?.CurrentWorld.RowId);
+            Svc.Chat.Print("---------测试---------");
         }
     }
 
-    private void DrawInfoSection()
+    private static void DrawInfoSection()
     {
         ImGui.PushTextWrapPos();
         ImGui.TextUnformatted("自动寻路找A怪\n依赖插件: Vnavmesh、Lifestream");
         ImGui.PopTextWrapPos();
         ImGui.Separator();
         ImGui.TextUnformatted($"角色当前状态");
-        ImGui.TextUnformatted($"数据中心: {MapManager.DcName}");
-        ImGui.TextUnformatted($"服务器: {MapManager.WorldName}");
-        ImGui.TextUnformatted($"地图: {MapManager.MapName}");
-        ImGui.TextUnformatted($"地图ID: {MapManager.MapId}");
-        ImGui.TextUnformatted($"分线: {MapManager.InstanceName}");
+        ImGui.TextUnformatted($"数据中心: {DataManager.PlayerLocation.DcName}");
+        ImGui.TextUnformatted($"服务器: {DataManager.PlayerLocation.WorldName}");
+        ImGui.TextUnformatted($"地图: {DataManager.PlayerLocation.MapName}");
+        ImGui.TextUnformatted($"地图ID: {DataManager.PlayerLocation.MapId}");
+        ImGui.TextUnformatted($"分线: {DataManager.PlayerLocation.InstanceName}");
         ImGui.Separator();
     }
 
@@ -78,7 +85,6 @@ public class MainWindow : Window, IDisposable
             Svc.Commands.ProcessCommand("/hh");
             Svc.Commands.ProcessCommand("/hht");
         }
-
         ImGui.SameLine();
         ImGui.TextUnformatted("需手动开始录制");
 
@@ -92,12 +98,12 @@ public class MainWindow : Window, IDisposable
     {
         ImGui.TextUnformatted("选择服务器:");
 
-        bool allSelected = MapManager.WorldsList.All(w => selectedWorld.ContainsKey(w) && selectedWorld[w]);
+        var allSelected = DataManager.PlayerLocation.WorldsList.All(w => selectedWorld.ContainsKey(w) && selectedWorld[w]);
 
         ImGui.SameLine();
         if (ImGui.SmallButton(allSelected ? "取消全选" : "全选"))
         {
-            foreach (var world in MapManager.WorldsList)
+            foreach (var world in DataManager.PlayerLocation.WorldsList)
             {
                 selectedWorld[world] = !allSelected;
             }
@@ -107,14 +113,14 @@ public class MainWindow : Window, IDisposable
         using var table = ImRaii.Table("WorldTable", 3);
         if (table)
         {
-            foreach (var world in MapManager.WorldsList)
+            foreach (var world in DataManager.PlayerLocation.WorldsList)
             {
                 ImGui.TableNextColumn();
 
                 if (!selectedWorld.ContainsKey(world))
                     selectedWorld[world] = false;
 
-                bool isChecked = selectedWorld[world];
+                var isChecked = selectedWorld[world];
                 if (ImGui.Checkbox(world, ref isChecked))
                 {
                     selectedWorld[world] = isChecked;
@@ -154,13 +160,13 @@ public class MainWindow : Window, IDisposable
                     selectedMap[exp] = value;
                     foreach (var map in mapList)
                     {
-                        selectedMap[exp][map.Name] = true;
+                        selectedMap[exp][map.MapName] = true;
                     }
                 }
 
                 ImGui.SameLine();
 
-                bool allSelected = value.Count > 0 && value.All(kvp => kvp.Value);
+                var allSelected = value.Count > 0 && value.All(kvp => kvp.Value);
 
                 if (ImGui.SmallButton(allSelected ? $"取消全选##{exp}" : $"全选##{exp}"))
                 {
@@ -180,13 +186,13 @@ public class MainWindow : Window, IDisposable
                     {
                         ImGui.TableNextColumn();
 
-                        if (!selectedMap[exp].ContainsKey(map.Name))
-                            selectedMap[exp][map.Name] = false;
+                        if (!selectedMap[exp].ContainsKey(map.MapName))
+                            selectedMap[exp][map.MapName] = false;
 
-                        bool mapChecked = value[map.Name];
-                        if (ImGui.Checkbox(map.Name, ref mapChecked))
+                        var mapChecked = value[map.MapName];
+                        if (ImGui.Checkbox(map.MapName, ref mapChecked))
                         {
-                            selectedMap[exp][map.Name] = mapChecked;
+                            selectedMap[exp][map.MapName] = mapChecked;
                             SaveConfig();
                         }
                     }
@@ -199,24 +205,24 @@ public class MainWindow : Window, IDisposable
 
     private void SaveConfig()
     {
-        Plugin.Configuration.EnableCrossWorld = enableCrossWorld;
-        Plugin.Configuration.SelectedWorlds = selectedWorld;
-        Plugin.Configuration.SelectedExpansion = selectedExpansion;
-        Plugin.Configuration.SelectedMap = selectedMap;
-        Plugin.Configuration.Save();
+        RankAHuntHelper.Configuration.EnableCrossWorld = enableCrossWorld;
+        RankAHuntHelper.Configuration.SelectedWorlds = selectedWorld;
+        RankAHuntHelper.Configuration.SelectedExpansion = selectedExpansion;
+        RankAHuntHelper.Configuration.SelectedMap = selectedMap;
+        RankAHuntHelper.Configuration.Save();
     }
 
     private void LoadConfig()
     {
-        enableCrossWorld = Plugin.Configuration.EnableCrossWorld;
+        enableCrossWorld = RankAHuntHelper.Configuration.EnableCrossWorld;
 
-        selectedWorld = Plugin.Configuration.SelectedWorlds
+        selectedWorld = RankAHuntHelper.Configuration.SelectedWorlds
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        selectedExpansion = Plugin.Configuration.SelectedExpansion
+        selectedExpansion = RankAHuntHelper.Configuration.SelectedExpansion
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        selectedMap = Plugin.Configuration.SelectedMap
+        selectedMap = RankAHuntHelper.Configuration.SelectedMap
             .ToDictionary(
                 kvp => kvp.Key,
                 kvp => new Dictionary<string, bool>(kvp.Value)

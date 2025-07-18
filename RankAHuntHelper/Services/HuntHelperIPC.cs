@@ -1,18 +1,17 @@
 using ECommons.EzIpcManager;
-using ECommons.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-namespace RankAHuntTrainAssistant.Services;
+namespace RankAHuntHelper.Services;
 
 public class HuntHelperIPC
 {
     [EzIPC] public Func<List<object>>? GetTrainList;
     [EzIPC] public Func<uint>? GetVersion;
 
-    public HuntHelperIPC()
+    private HuntHelperIPC()
     {
         EzIPC.Init(this, "HuntHelper", SafeWrapper.AnyException);
     }

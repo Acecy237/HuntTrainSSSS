@@ -1,14 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
-using static RankAHuntTrainAssistant.StaticData.ExpansionData;
+using static RankAHuntHelper.StaticData.ExpansionData;
 
-namespace RankAHuntTrainAssistant.StaticData;
+namespace RankAHuntHelper.StaticData;
 
 public class Map
 {
-    public string Name { get; set; } = "";
+    public string MapName { get; set; } = "";
+    public uint MapId { get; set; }
     public string AetheryteName { get; set; } = "";
-    public int MapId { get; set; }
+    public uint AetheryteId { get; set; }
+    
     public List<(float X, float Y, float Z)> RankASpawns { get; set; } = new();
 }
 public class MapData
@@ -17,7 +19,7 @@ public class MapData
     {
         [Expansion.暗影之逆焰] = new List<Map>
         {
-            new() { Name = "雷克兰德", AetheryteName = "乔布要塞", MapId = 813, RankASpawns = new()
+            new() { MapName = "雷克兰德", MapId = 813, AetheryteName = "乔布要塞", AetheryteId = 132, RankASpawns = new()
                 {
                     (754.473f, 80.849f, -459.455f),
                     (684.676f, 25.555f, -281.994f),
@@ -38,7 +40,7 @@ public class MapData
                     (-685.484f, 68.922f, 59.471f),
                     (-388.776f, -1.595f, 150.046f),
                 }},
-            new() { Name = "珂露西亚岛", AetheryteName = "图姆拉村", MapId = 814, RankASpawns = new()
+            new() { MapName = "珂露西亚岛", MapId = 814, AetheryteName = "图姆拉村", AetheryteId = 139, RankASpawns = new()
                 {
                     (649.284f, 41.508f, 141.660f),
                     (429.028f, 11.860f, 425.737f),
@@ -58,7 +60,7 @@ public class MapData
                     (78.974f, 337.892f, -190.924f),
                     (-14.165f, 319.118f, 54.234f),
                 }},
-            new() { Name = "安穆艾兰", AetheryteName = "络尾聚落", MapId = 815, RankASpawns = new()
+            new() { MapName = "安穆艾兰", MapId = 815, AetheryteName = "络尾聚落", AetheryteId = 141, RankASpawns = new()
                 {
                     (363.202f, -31.056f, -458.606f),
                     (472.292f, -38.977f, -384.300f),
@@ -78,7 +80,7 @@ public class MapData
                     (-237.916f, 37.419f, -565.819f),
                     (-556.745f, -1.076f, -481.064f),
                 } },
-            new() { Name = "伊尔美格", AetheryteName = "群花馆", MapId = 816, RankASpawns = new()
+            new() { MapName = "伊尔美格", MapId = 816, AetheryteName = "群花馆", AetheryteId = 144, RankASpawns = new()
                 {
                     (-119.335f, 3.797f, 287.651f),
                     (63.689f, 1.820f, 369.742f),
@@ -98,7 +100,7 @@ public class MapData
                     (508.028f, 92.427f, -392.585f),
                     (286.382f, 39.793f, -119.868f),
                 } },
-            new() { Name = "拉凯提卡大森林", AetheryteName = "法诺村", MapId = 817, RankASpawns = new()
+            new() { MapName = "拉凯提卡大森林", MapId = 817, AetheryteName = "法诺村", AetheryteId = 143, RankASpawns = new()
                 {
                     (-241.854f, 12.023f, 132.950f),
                     (-327.450f, 5.850f, 47.198f),
@@ -116,7 +118,7 @@ public class MapData
                     (19.411f, -4.548f, -386.891f),
                     (48.909f, -20.000f, -535.209f),
                 } },
-            new() { Name = "黑风海", AetheryteName = "鳍人潮池", MapId = 818, RankASpawns = new()
+            new() { MapName = "黑风海", MapId = 818, AetheryteName = "鳍人潮池", AetheryteId = 147, RankASpawns = new()
                 {
                     (381.391f, 341.957f, 64.255f),
                     (618.685f, 382.505f, 23.423f),
@@ -140,7 +142,7 @@ public class MapData
 
         [Expansion.晓月之终途] = new List<Map>
         {
-            new() { Name = "迷津", AetheryteName = "公堂保管院", MapId = 956, RankASpawns = new()
+            new() { MapName = "迷津", MapId = 956, AetheryteName = "公堂保管院", AetheryteId = 166, RankASpawns = new()
                 {
                     (430.182f, 178.517f, -661.508f),
                     (639.903f, 174.031f, -399.817f),
@@ -153,7 +155,7 @@ public class MapData
                     (-252.245f, -13.772f, -257.464f),
                     (-219.677f, 90.673f, -603.114f),
                 } },
-            new() { Name = "萨维奈岛", AetheryteName = "新港", MapId = 957, RankASpawns = new()
+            new() { MapName = "萨维奈岛", MapId = 957, AetheryteName = "新港", AetheryteId = 169, RankASpawns = new()
                 {
                     (-59.224f, 19.647f, 478.581f),
                     (-154.453f, 38.773f, 91.114f),
@@ -165,7 +167,7 @@ public class MapData
                     (252.498f, 21.541f, -33.685f),
                     (306.663f, 5.395f, 215.467f),
                 } },
-            new() { Name = "加雷马", AetheryteName = "第三站", MapId = 958, RankASpawns = new()
+            new() { MapName = "加雷马", MapId = 958, AetheryteName = "第三站", AetheryteId = 173, RankASpawns = new()
                 {
                     (566.275f, 11.279f, 19.927f),
                     (371.494f, 13.240f, -35.788f),
@@ -177,7 +179,7 @@ public class MapData
                     (-462.861f, 15.541f, -436.887f),
                     (-586.051f, 22.580f, -490.933f),
                 } },
-            new() { Name = "叹息海", AetheryteName = "泪湾", MapId = 969, RankASpawns = new()
+            new() { MapName = "叹息海", MapId = 969, AetheryteName = "泪湾", AetheryteId = 174, RankASpawns = new()
                 {
                     (-557.146f, 144.023f, 128.509f),
                     (-151.766f, 78.195f, 3.189f),
@@ -190,7 +192,7 @@ public class MapData
                     (341.542f, 67.600f, 259.358f),
                     (139.679f, 61.545f, 94.933f),
                 } },
-            new() { Name = "天外天垓", AetheryteName = "半途终旅", MapId = 960, RankASpawns = new()
+            new() { MapName = "天外天垓", MapId = 960, AetheryteName = "半途终旅", AetheryteId = 179, RankASpawns = new()
                 {
                     (-251.292f, 77.090f, 217.817f),
                     (-196.529f, 66.667f, 445.495f),
@@ -202,7 +204,7 @@ public class MapData
                     (-105.997f, 282.052f, -571.283f),
                     (-408.475f, 263.462f, -543.951f),
                 } },
-            new() { Name = "厄尔庇斯", AetheryteName = "十二奇园", MapId = 961, RankASpawns = new()
+            new() { MapName = "厄尔庇斯", MapId = 961, AetheryteName = "十二奇园", AetheryteId = 177, RankASpawns = new()
                 {
                     (-723.572f, -42.571f, 377.693f),
                     (-435.993f, -41.057f, 532.996f),
@@ -220,7 +222,7 @@ public class MapData
 
         [Expansion.金曦之遗辉] = new List<Map>
         {
-            new() { Name = "奥阔帕恰山", AetheryteName = "瓦丘恩佩洛", MapId = 1187, RankASpawns = new()
+            new() { MapName = "奥阔帕恰山", MapId = 1187, AetheryteName = "瓦丘恩佩洛", AetheryteId = 200, RankASpawns = new()
                 {
                     (366.658f, -147.917f, -600.648f),
                     (-120.160f, -109.198f, -364.020f),
@@ -230,7 +232,7 @@ public class MapData
                     (20.696f, 24.242f, -39.823f),
                     (325.333f, 59.255f, 63.886f),
                 } },
-            new() { Name = "克扎玛乌卡湿地", AetheryteName = "哈努聚落", MapId = 1188, RankASpawns = new()
+            new() { MapName = "克扎玛乌卡湿地", MapId = 1188, AetheryteName = "哈努聚落", AetheryteId = 202, RankASpawns = new()
                 {
                     (-591.294f, 0.412f, -670.812f),
                     (-753.677f, 0.883f, -471.258f),
@@ -241,7 +243,7 @@ public class MapData
                     (127.265f, 109.200f, 758.925f),
                     (767.681f, 9.599f, -73.357f),
                 } },
-            new() { Name = "亚克特尔树海", AetheryteName = "红豹村", MapId = 1189, RankASpawns = new()
+            new() { MapName = "亚克特尔树海", MapId = 1189, AetheryteName = "红豹村", AetheryteId = 205, RankASpawns = new()
                 {
                     (-638.302f, 24.037f, -102.531f),
                     (90.209f, 5.086f, -365.810f),
@@ -251,7 +253,7 @@ public class MapData
                     (156.017f, -163.770f, 576.261f),
                     (-11.126f, -168.883f, 744.914f),
                 } },
-            new() { Name = "夏劳尼荒野", AetheryteName = "胡萨塔伊驿镇", MapId = 1190, RankASpawns = new()
+            new() { MapName = "夏劳尼荒野", MapId = 1190, AetheryteName = "胡萨塔伊驿镇", AetheryteId = 207, RankASpawns = new()
                 {
                     (14.265f, 0.678f, 593.027f),
                     (28.066f, 6.563f, 331.434f),
@@ -262,7 +264,7 @@ public class MapData
                     (-266.868f, 38.679f, -663.576f),
                     (645.173f, -12.842f, -752.830f),
                 } },
-            new() { Name = "遗产之地", AetheryteName = "亚斯拉尼站", MapId = 1191, RankASpawns = new()
+            new() { MapName = "遗产之地", MapId = 1191, AetheryteName = "亚斯拉尼站", AetheryteId = 210, RankASpawns = new()
                 {
                     (402.006f, 133.672f, 417.036f),
                     (294.961f, 95.019f, 605.934f),
@@ -272,7 +274,7 @@ public class MapData
                     (-352.175f, 22.095f, 227.657f),
                     (-663.912f, -14.000f, 592.621f),
                 } },
-            new() { Name = "活着的记忆", AetheryteName = "地场节点·忆", MapId = 1192, RankASpawns = new()
+            new() { MapName = "活着的记忆", MapId = 1192, AetheryteName = "地场节点·忆", AetheryteId = 213, RankASpawns = new()
                 {
                     (267.818f, -0.948f, 482.756f),
                     (-455.820f, -0.330f, 809.364f),
@@ -288,15 +290,15 @@ public class MapData
     {
         if (ExpansionToMapData.TryGetValue(expansion, out var maps))
         {
-            return maps.Select(map => map.Name).ToList();
+            return maps.Select(map => map.MapName).ToList();
         }
         return new List<string>();
     }
-    public static Map? GetMapByName(string name)
+    public static Map? GetMapByName(string MapName)
     {
         foreach (var mapList in ExpansionToMapData.Values)
         {
-            var map = mapList.FirstOrDefault(m => m.Name == name);
+            var map = mapList.FirstOrDefault(m => m.MapName == MapName);
             if (map != null)
                 return map;
         }

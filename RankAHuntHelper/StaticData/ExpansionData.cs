@@ -1,6 +1,6 @@
 using System;
 
-namespace RankAHuntTrainAssistant.StaticData;
+namespace RankAHuntHelper.StaticData;
 
 public static class ExpansionData
 {

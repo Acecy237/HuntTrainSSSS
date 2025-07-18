@@ -1,33 +1,26 @@
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
-using Dalamud.Plugin.Services;
-using ECommons;
-using ECommons.DalamudServices;
-using ECommons.EzIpcManager;
-using RankAHuntTrainAssistant.Services;
-using RankAHuntTrainAssistant.Windows;
+using ECommons.Singletons;
+using RankAHuntHelper.Windows;
 
 
-namespace RankAHuntTrainAssistant;
+namespace RankAHuntHelper;
 
-public sealed class Plugin : IDalamudPlugin
+public sealed class RankAHuntHelper : IDalamudPlugin
 {
-    private const string CommandName = "/aht";
+    private const string CommandName = "/ahh";
 
-    // 用于读取和保存插件配置
     public static Configuration Configuration = new();
 
-    // UI窗口管理器
-    public readonly WindowSystem WindowSystem = new("RankAHuntTrainAssistant");
+    public readonly WindowSystem WindowSystem = new("RankAHuntHelper");
     private ConfigWindow ConfigWindow { get; init; }
     private MainWindow MainWindow { get; init; }
 
-    // 构造函数
-    public Plugin(IDalamudPluginInterface pluginInterface) 
+    public RankAHuntHelper(IDalamudPluginInterface pluginInterface) 
     {
         ECommonsMain.Init(pluginInterface, this);
-        IpcService.InitAll();
+        SingletonServiceManager.Initialize(typeof(ServiceManager));
 
         Configuration = Svc.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
 
@@ -39,7 +32,7 @@ public sealed class Plugin : IDalamudPlugin
 
         Svc.Commands.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
-            HelpMessage = "打开设置"
+            HelpMessage = "打开主界面"
         });
 
         Svc.PluginInterface.UiBuilder.Draw += DrawUI;
@@ -66,7 +59,6 @@ public sealed class Plugin : IDalamudPlugin
     }
 
     private void DrawUI() => WindowSystem.Draw();
-
     public void ToggleConfigUI() => ConfigWindow.Toggle();
     public void ToggleMainUI() => MainWindow.Toggle();
 }

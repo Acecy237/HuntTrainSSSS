@@ -1,9 +1,7 @@
 using ECommons.EzIpcManager;
-using ECommons.Logging;
-using RankAHuntTrainAssistant;
 using System;
 
-namespace RankAHuntTrainAssistant.Services;
+namespace RankAHuntHelper.Services;
 
 public class LifestreamIPC
 {
@@ -13,8 +11,7 @@ public class LifestreamIPC
     [EzIPC] public Action<int>? ChangeInstance;
     [EzIPC] public Action<string, bool, string, bool, int?, bool?, bool?>? TPAndChangeWorld;
 
-
-    public LifestreamIPC()
+    private LifestreamIPC()
     {
         EzIPC.Init(this, "Lifestream", SafeWrapper.AnyException);
     }
@@ -38,18 +35,7 @@ public class LifestreamIPC
         ChangeInstance?.Invoke(next);
     }
 
-    public int GetCurrentInstanceIndex()
-    {
-        try
-        {
-            return GetCurrentInstance?.Invoke() ?? 0;
-        }
-        catch (Exception ex)
-        {
-            PluginLog.Error("Error getting current instance index: " + ex);
-            return 0;
-        }
-    }
+    public int GetCurrentInstanceIndex() => GetCurrentInstance?.Invoke() ?? 0;
 
     public void ChangeWorld(string world)
     {
@@ -63,5 +49,4 @@ public class LifestreamIPC
             true
             );
     }
-
 }
