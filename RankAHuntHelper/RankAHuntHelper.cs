@@ -20,6 +20,7 @@ public sealed class RankAHuntHelper : IDalamudPlugin
     public RankAHuntHelper(IDalamudPluginInterface pluginInterface) 
     {
         ECommonsMain.Init(pluginInterface, this);
+
         SingletonServiceManager.Initialize(typeof(ServiceManager));
 
         Configuration = Svc.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
