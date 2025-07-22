@@ -2,6 +2,7 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using RankAHuntHelper.StaticData;
+using RankAHuntHelper.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,9 @@ using static RankAHuntHelper.StaticData.ExpansionData;
 namespace RankAHuntHelper.Windows;
 
 public class MainWindow : Window, IDisposable
-{
+{    
     private bool enableCrossWorld = false;
-    private Dictionary<string, bool> selectedWorld = new();
+    private string selectedWorldName = string.Empty;
     private Dictionary<Expansion, bool> selectedExpansion = new();
     private Dictionary<Expansion, Dictionary<string, bool>> selectedMap = new();
 
@@ -22,109 +23,81 @@ public class MainWindow : Window, IDisposable
         LoadConfig();
     }
 
-    public void Dispose() {
-    
+    public void Dispose() 
+    {
+        
     }
 
     public override void Draw()
     {
         DrawInfoSection();
         DrawFunctionSection();
-        if (enableCrossWorld && DataManager.PlayerLocation.WorldsList != null)
-        {
+        if (enableCrossWorld)
+        {            
             DrawCrossWorldSelector();
-        }
+        }        
         DrawMapSelector();
-
+        
         if (ImGui.Button("开始"))
-        {
-
+        {            
+            TaskMain.StartTask();
         }
-
         ImGui.SameLine();
-
-        if (ImGui.Button("暂停"))
-        {
-
-        }
-
-        ImGui.SameLine();
-
         if (ImGui.Button("停止"))
-        {
-
-        }
-
-        if (ImGui.Button("功能测试"))
-        {
-            Svc.Chat.Print("---------测试---------");
+        {            
+            TaskMain.ResetTask();
         }
     }
 
     private static void DrawInfoSection()
     {
         ImGui.PushTextWrapPos();
-        ImGui.TextUnformatted("自动寻路找A怪\n依赖插件: Vnavmesh、Lifestream");
+        ImGui.TextUnformatted("绝伊甸自动加低保\n依赖插件: AEassist, SplatoonX, Nyadraw, kodakkuAssist");
         ImGui.PopTextWrapPos();
         ImGui.Separator();
         ImGui.TextUnformatted($"角色当前状态");
-        ImGui.TextUnformatted($"数据中心: {DataManager.PlayerLocation.DcName}");
-        ImGui.TextUnformatted($"服务器: {DataManager.PlayerLocation.WorldName}");
-        ImGui.TextUnformatted($"地图: {DataManager.PlayerLocation.MapName}");
-        ImGui.TextUnformatted($"地图ID: {DataManager.PlayerLocation.MapId}");
-        ImGui.TextUnformatted($"分线: {DataManager.PlayerLocation.InstanceName}");
+        ImGui.TextUnformatted($"数据中心: {D.PlayerLocation.DcName}");
+        ImGui.TextUnformatted($"服务器: {D.PlayerLocation.WorldName}");
+        ImGui.TextUnformatted($"地图: {D.PlayerLocation.MapName}");
+        ImGui.TextUnformatted($"地图ID: {D.PlayerLocation.MapId}");
+        ImGui.TextUnformatted($"分线: {D.PlayerLocation.InstanceName}");
+        ImGui.Separator();
+        ImGui.Text($"插件状态: {(TaskMain.IsRunning ? "运行中" : "未运行")}");
+        ImGui.Text($"当前任务: {TaskMain.stateString}");
         ImGui.Separator();
     }
 
     private void DrawFunctionSection()
     {        
         ImGui.Text("功能设置");
-
         if (ImGui.Button("Hunt Helper"))
         {
             Svc.Commands.ProcessCommand("/hh");
             Svc.Commands.ProcessCommand("/hht");
         }
         ImGui.SameLine();
-        ImGui.TextUnformatted("需手动开始录制");
-
-        if (ImGui.Checkbox("跨服功能", ref enableCrossWorld))
-        {
-            SaveConfig();
-        }
+        ImGui.TextUnformatted("需手动录制(它没有支持调用开关捏)");
+        if (ImGui.Checkbox("自动跨服(勾选必须选择服务器）", ref enableCrossWorld)) SaveConfig();
     }
 
     private void DrawCrossWorldSelector()
     {
-        ImGui.TextUnformatted("选择服务器:");
-
-        var allSelected = DataManager.PlayerLocation.WorldsList.All(w => selectedWorld.ContainsKey(w) && selectedWorld[w]);
-
-        ImGui.SameLine();
-        if (ImGui.SmallButton(allSelected ? "取消全选" : "全选"))
+        var worldList = D.PlayerLocation.WorldsList;
+        var currentIndex = Math.Max(0, worldList.IndexOf(selectedWorldName));
+        using (var combo = ImRaii.Combo("##WorldCombo", string.IsNullOrEmpty(selectedWorldName) ? "请选择" : selectedWorldName))
         {
-            foreach (var world in DataManager.PlayerLocation.WorldsList)
+            if (combo)
             {
-                selectedWorld[world] = !allSelected;
-            }
-            SaveConfig();
-        }
-
-        using var table = ImRaii.Table("WorldTable", 3);
-        if (table)
-        {
-            foreach (var world in DataManager.PlayerLocation.WorldsList)
-            {
-                ImGui.TableNextColumn();
-
-                if (!selectedWorld.ContainsKey(world))
-                    selectedWorld[world] = false;
-
-                var isChecked = selectedWorld[world];
-                if (ImGui.Checkbox(world, ref isChecked))
+                for (int i = 0; i < worldList.Count; i++)
                 {
-                    selectedWorld[world] = isChecked;
-                    SaveConfig();
+                    var isSelected = worldList[i] == selectedWorldName;
+                    if (ImGui.Selectable(worldList[i], isSelected))
+                    {
+                        selectedWorldName = worldList[i];
+                        SaveConfig();
+                    }
+                    if (isSelected)
+                        ImGui.SetItemDefaultFocus();
                 }
             }
         }
@@ -206,7 +179,7 @@ public class MainWindow : Window, IDisposable
     private void SaveConfig()
     {
         RankAHuntHelper.Configuration.EnableCrossWorld = enableCrossWorld;
-        RankAHuntHelper.Configuration.SelectedWorlds = selectedWorld;
+        RankAHuntHelper.Configuration.selectedWorldName = selectedWorldName;
         RankAHuntHelper.Configuration.SelectedExpansion = selectedExpansion;
         RankAHuntHelper.Configuration.SelectedMap = selectedMap;
         RankAHuntHelper.Configuration.Save();
@@ -215,10 +188,7 @@ public class MainWindow : Window, IDisposable
     private void LoadConfig()
     {
         enableCrossWorld = RankAHuntHelper.Configuration.EnableCrossWorld;
-
-        selectedWorld = RankAHuntHelper.Configuration.SelectedWorlds
-            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
+        selectedWorldName = RankAHuntHelper.Configuration.selectedWorldName;
         selectedExpansion = RankAHuntHelper.Configuration.SelectedExpansion
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 

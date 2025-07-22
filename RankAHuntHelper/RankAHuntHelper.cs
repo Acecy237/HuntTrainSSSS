@@ -2,6 +2,7 @@ using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using ECommons.Singletons;
+using ECommons;
 using RankAHuntHelper.Windows;
 
 
@@ -41,6 +42,8 @@ public sealed class RankAHuntHelper : IDalamudPlugin
         Svc.PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUI;
 
         Svc.PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
+
+        ToggleMainUI();
     }
 
     public void Dispose()

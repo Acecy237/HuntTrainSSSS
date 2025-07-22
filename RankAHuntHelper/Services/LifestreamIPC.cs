@@ -1,15 +1,18 @@
 using ECommons.EzIpcManager;
+using ECommons.GameHelpers;
 using System;
 
 namespace RankAHuntHelper.Services;
 
 public class LifestreamIPC
 {
+    [EzIPC] public Func<bool>? IsBusy;
     [EzIPC] public Func<bool>? CanChangeInstance;
     [EzIPC] public Func<int>? GetNumberOfInstances;
     [EzIPC] public Func<int>? GetCurrentInstance;
+    [EzIPC] public Func<string,bool>? ChangeWorld;
     [EzIPC] public Action<int>? ChangeInstance;
-    [EzIPC] public Action<string, bool, string, bool, int?, bool?, bool?>? TPAndChangeWorld;
+    [EzIPC] public Action? Abort;
 
     private LifestreamIPC()
     {
@@ -37,16 +40,18 @@ public class LifestreamIPC
 
     public int GetCurrentInstanceIndex() => GetCurrentInstance?.Invoke() ?? 0;
 
-    public void ChangeWorld(string world)
+    public bool TpChangeWorld(string world)
     {
-        TPAndChangeWorld?.Invoke(
-            world,
-            false,
-            string.Empty,
-            true,
-            null,
-            true,
-            true
-            );
+        if (Player.IsBusy)
+        {
+            Svc.Chat.PrintError("角色忙，无法传送");
+            return false;
+        }
+        if (IsBusy?.Invoke() ?? false)
+        {
+            Svc.Chat.PrintError("Lifestream传送中，无法传送");
+            return false;
+        }
+        return ChangeWorld?.Invoke(world) ?? false;
     }
 }
