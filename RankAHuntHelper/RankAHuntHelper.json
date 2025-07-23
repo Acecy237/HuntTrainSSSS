@@ -1,8 +1,8 @@
 {
     "Author": "Acecy237",
     "Name": "RankAHuntHelper",
-    "Punchline": "/aht 打开界面",
-    "Description": "自动找A怪的小工具",
+    "Punchline": "/ahh 打开界面",
+    "Description": "自动找A怪，依赖插件: LifeStream, Teleporter, Vnavmesh, HuntHelper",
     "ApplicableVersion": "any",
     "Tags": [
         "HuntTrain",

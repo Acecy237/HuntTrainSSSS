@@ -53,16 +53,12 @@ public static class TaskChangeInstance
                 return true;
             }
         });
-        T.TaskManager.Enqueue(() =>Chat.ExecuteCommand("/ac 随机坐骑"));
         T.TaskManager.Enqueue(() =>
         {
-            if (!Player.IsCasting)
-            {
-                Chat.ExecuteCommand("/gaction 跳跃");
-                return true;
-            }
-            return false;
+            if (!Player.Mounted)Chat.ExecuteCommand("/ac 随机坐骑");
         });
+        T.TaskManager.EnqueueDelay(2000);
+        T.TaskManager.Enqueue(() =>Chat.ExecuteCommand("/gaction 跳跃"));
         T.TaskManager.Enqueue(() =>
         {
             if (S.Lifestream.GetCurrentInstance() == num) return true;
@@ -74,7 +70,7 @@ public static class TaskChangeInstance
             }
             return false;
         }, new(timeLimitMS: 15000));
-        T.TaskManager.EnqueueDelay(3000);
+        T.TaskManager.EnqueueDelay(4000);
         T.TaskManager.Enqueue(() =>
         {
             if (Player.Available && !Player.IsBusy)

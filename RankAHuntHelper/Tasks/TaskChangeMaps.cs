@@ -1,3 +1,4 @@
+using ECommons.Automation;
 using ECommons.GameHelpers;
 using RankAHuntHelper.StaticData;
 using System.Linq;
@@ -14,6 +15,11 @@ internal static class TaskChangeMaps
         T.TaskManager.Enqueue(() => S.Teleporter.MapTeleport(mapName));
         T.TaskManager.EnqueueDelay(3000);
         T.TaskManager.Enqueue(() => CheckMapVisit(mapName, mapId));
+        T.TaskManager.Enqueue(() =>
+        {
+            if (!Player.Mounted) Chat.ExecuteCommand("/ac 随机坐骑");
+        });
+        T.TaskManager.EnqueueDelay(3000);
     }
 
     private static bool CheckMapVisit(string mapName, ushort mapId)

@@ -251,6 +251,7 @@ internal static class TaskMain
                 break;
             case TaskState.EndTask:
                 ResetTask();
+                EndTask();
                 ChangeTaskState(TaskState.Idle);
                 break;
         }
@@ -313,7 +314,7 @@ internal static class TaskMain
             TaskData.IsBuiltInstance = false;
             ChangeTaskState(TaskState.PrepareFly);
             return;
-        }
+        }   
         if (!TaskData.GetNextInstance())
         {
             TaskData.IsMapInstatnce = false;
@@ -343,13 +344,14 @@ internal static class TaskMain
         TaskData.CurrentPointIndex = 0;
         TaskData.CurrentPointsList = GetRankASpawnsByMapName(D.PlayerLocation.MapName); 
         TaskData.CurrentPointsList = PathHelper.GetGreedy2OptPath(TaskData.CurrentPointsList, Player.Position);
-        ChangeTaskState(TaskState.Flying);
+        TaskManager.EnqueueDelay(2000);
+        TaskManager.Enqueue(() => ChangeTaskState(TaskState.Flying));
     }
 
     internal unsafe static void Flying()
     {
         ChangeStateString("找怪");
-        if (TaskData.CurrentPointIndex >= TaskData.CurrentPointsList.Count || TaskData.EliteMarkCount >= 2)
+        if (TaskData.CurrentPointIndex >= TaskData.CurrentPointsList.Count || TaskData.EliteMarkCount == 2)
         {
             VnavmeshStop();
             ChangeTaskState(TaskState.ChangeMap);
@@ -363,16 +365,20 @@ internal static class TaskMain
             TaskData.CurrentPointIndex ++;
             return;
         }
-        if(!Player.IsMoving)
+        if (S.Vnavmesh.IsReady.Invoke())
         {
-            Flyto(target.X, target.Y, target.Z);
-            TaskData.LastFlyTarget = target;
+            if (!Player.IsMoving)
+            {
+                Flyto(target.X, target.Y, target.Z);
+                TaskData.LastFlyTarget = target;
+            }
+            if (TaskData.LastFlyTarget == null)
+            {
+                Flyto(target.X, target.Y, target.Z);
+                TaskData.LastFlyTarget = target;
+            }
         }
-        if (TaskData.LastFlyTarget == null)
-        {
-            Flyto(target.X, target.Y, target.Z);
-            TaskData.LastFlyTarget = target;         
-        }
+
     }
 
     internal static void EndTask()
