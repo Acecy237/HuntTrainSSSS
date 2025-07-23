@@ -11,6 +11,7 @@ namespace RankAHuntHelper;
 public class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 0;
+    public bool EnableNotice { get; set; } = false;
     public bool EnableCrossWorld { get; set; } = false;
     public string selectedWorldName { get; set; } = string.Empty;
     public Dictionary<Expansion, bool> SelectedExpansion { get; set; } = new();

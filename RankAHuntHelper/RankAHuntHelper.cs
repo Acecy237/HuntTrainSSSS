@@ -42,8 +42,6 @@ public sealed class RankAHuntHelper : IDalamudPlugin
         Svc.PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUI;
 
         Svc.PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
-
-        ToggleMainUI();
     }
 
     public void Dispose()

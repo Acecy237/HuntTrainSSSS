@@ -24,7 +24,7 @@ internal static class TaskChangeMaps
             T.ChangeTaskState(T.TaskState.ChangeInstance);
             return true;
         }
-        T.ChangeStateString("传送中...");
+        T.ChangeStateString($"传送{mapName}");
         return false;
     }
 }

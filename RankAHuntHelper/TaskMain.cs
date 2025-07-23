@@ -347,7 +347,8 @@ internal static class TaskMain
     }
 
     internal unsafe static void Flying()
-    {        
+    {
+        ChangeStateString("找怪");
         if (TaskData.CurrentPointIndex >= TaskData.CurrentPointsList.Count || TaskData.EliteMarkCount >= 2)
         {
             VnavmeshStop();
@@ -370,9 +371,17 @@ internal static class TaskMain
         if (TaskData.LastFlyTarget == null)
         {
             Flyto(target.X, target.Y, target.Z);
-            TaskData.LastFlyTarget = target;
-            ChangeStateString("搜索A怪中");            
+            TaskData.LastFlyTarget = target;         
         }
+    }
+
+    internal static void EndTask()
+    {
+        ChangeStateString("找怪结束");
+        if (RankAHuntHelper.Configuration.EnableNotice)
+        {
+            Chat.ExecuteCommand("/e 找怪结束<se.1>");
+        }        
     }
 
     public static void Flyto(float x, float y, float z)

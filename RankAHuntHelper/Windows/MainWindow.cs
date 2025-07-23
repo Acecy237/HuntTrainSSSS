@@ -1,16 +1,19 @@
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
+using ECommons.Automation;
 using ImGuiNET;
 using RankAHuntHelper.StaticData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using static RankAHuntHelper.StaticData.ExpansionData;
 
 namespace RankAHuntHelper.Windows;
 
 public class MainWindow : Window, IDisposable
 {    
+    private bool enableNotice = false;
     private bool enableCrossWorld = false;
     private string selectedWorldName = string.Empty;
     private Dictionary<Expansion, bool> selectedExpansion = new();
@@ -51,25 +54,44 @@ public class MainWindow : Window, IDisposable
     private static void DrawInfoSection()
     {
         ImGui.PushTextWrapPos();
-        ImGui.TextUnformatted("我找怪，你开/n依赖插件: LifeStream, Teleporter, Vnavmesh, HuntHelper");
+        ImGui.TextUnformatted("我找怪，你来开\n依赖插件: LifeStream, Teleporter, Vnavmesh, HuntHelper");
         ImGui.PopTextWrapPos();
         ImGui.Separator();
         ImGui.Text($"插件状态: {(TaskMain.IsRunning ? "运行中" : "未运行")}");
-        ImGui.Text($"当前任务: {TaskMain.stateString}");
+        ImGui.Text($"当前任务: {TaskMain.stateString}"); 
+        ImGui.Text($"当前地图: {TaskMain.TaskData.TargetMap} ({TaskMain.TaskData.TargetMapIndex + 1}/{TaskMain.TaskData.MapList.Count})");
+
+        if (TaskMain.TaskData.MapList.Count > 0)
+        {
+            float progress = (TaskMain.TaskData.TargetMapIndex + 1) / (float)TaskMain.TaskData.MapList.Count;
+            ImGui.ProgressBar(progress, new Vector2(300, 20), $"{TaskMain.TaskData.TargetMapIndex + 1} / {TaskMain.TaskData.MapList.Count}");
+        }
+
+        ImGui.Text($"当前点位: {TaskMain.TaskData.CurrentPointIndex + 1} / {TaskMain.TaskData.CurrentPointsList.Count}");
+
+        if (TaskMain.TaskData.CurrentPointsList.Count > 0)
+        {
+            float progress = (TaskMain.TaskData.CurrentPointIndex + 1) / (float)TaskMain.TaskData.CurrentPointsList.Count;
+            ImGui.ProgressBar(progress, new Vector2(300, 20), $"{TaskMain.TaskData.CurrentPointIndex + 1} / {TaskMain.TaskData.CurrentPointsList.Count}");
+        }
+
+        ImGui.Text($"当前地图 A 怪数量: {TaskMain.TaskData.EliteMarkCount}");
+        ImGui.Text($"任务总共发现 A 怪: {TaskMain.TaskData.TotalEliteMarkCount}");
+
         ImGui.Separator();
     }
 
     private void DrawFunctionSection()
-    {        
-        ImGui.Text("功能设置");
+    {
         if (ImGui.Button("Hunt Helper"))
         {
             Svc.Commands.ProcessCommand("/hh");
             Svc.Commands.ProcessCommand("/hht");
         }
         ImGui.SameLine();
-        ImGui.TextUnformatted("需手动录制(它没有支持调用开关捏)");
-        if (ImGui.Checkbox("自动跨服(勾选必须选择服务器）", ref enableCrossWorld)) SaveConfig();
+        ImGui.TextUnformatted("需手动录制(不支持自动开关捏)");
+        if (ImGui.Checkbox("完成提示音", ref enableNotice)) SaveConfig();
+        if (ImGui.Checkbox("自动跨服", ref enableCrossWorld)) SaveConfig();
     }
 
     private void DrawCrossWorldSelector()
@@ -170,6 +192,7 @@ public class MainWindow : Window, IDisposable
 
     private void SaveConfig()
     {
+        RankAHuntHelper.Configuration.EnableNotice = enableNotice;
         RankAHuntHelper.Configuration.EnableCrossWorld = enableCrossWorld;
         RankAHuntHelper.Configuration.selectedWorldName = selectedWorldName;
         RankAHuntHelper.Configuration.SelectedExpansion = selectedExpansion;
@@ -179,6 +202,7 @@ public class MainWindow : Window, IDisposable
 
     private void LoadConfig()
     {
+        enableNotice = RankAHuntHelper.Configuration.EnableNotice;
         enableCrossWorld = RankAHuntHelper.Configuration.EnableCrossWorld;
         selectedWorldName = RankAHuntHelper.Configuration.selectedWorldName;
         selectedExpansion = RankAHuntHelper.Configuration.SelectedExpansion
