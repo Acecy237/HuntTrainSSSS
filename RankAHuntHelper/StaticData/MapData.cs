@@ -7,7 +7,7 @@ namespace RankAHuntHelper.StaticData;
 public class Map
 {
     public string MapName { get; set; } = "";
-    public uint MapId { get; set; }
+    public ushort MapId { get; set; }
     public string AetheryteName { get; set; } = "";
     public uint AetheryteId { get; set; }
     
@@ -179,7 +179,7 @@ public class MapData
                     (-462.861f, 15.541f, -436.887f),
                     (-586.051f, 22.580f, -490.933f),
                 } },
-            new() { MapName = "叹息海", MapId = 969, AetheryteName = "泪湾", AetheryteId = 174, RankASpawns = new()
+            new() { MapName = "叹息海", MapId = 959, AetheryteName = "泪湾", AetheryteId = 174, RankASpawns = new()
                 {
                     (-557.146f, 144.023f, 128.509f),
                     (-151.766f, 78.195f, 3.189f),

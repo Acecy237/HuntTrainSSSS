@@ -6,13 +6,13 @@ namespace RankAHuntHelper.Services;
 
 public class LifestreamIPC
 {
-    [EzIPC] public Func<bool>? IsBusy;
-    [EzIPC] public Func<bool>? CanChangeInstance;
-    [EzIPC] public Func<int>? GetNumberOfInstances;
-    [EzIPC] public Func<int>? GetCurrentInstance;
-    [EzIPC] public Func<string,bool>? ChangeWorld;
-    [EzIPC] public Action<int>? ChangeInstance;
-    [EzIPC] public Action? Abort;
+    [EzIPC] public Func<bool> IsBusy { get; private set; } = () => false;
+    [EzIPC] public Func<bool> CanChangeInstance { get; private set; } = () => false;
+    [EzIPC] public Func<int> GetNumberOfInstances { get; private set; } = () => 1;
+    [EzIPC] public Func<int> GetCurrentInstance { get; private set; } = () => 0;
+    [EzIPC] public Func<string, bool> ChangeWorld { get; private set; } = _ => false;
+    [EzIPC] public Action<int> ChangeInstance { get; private set; } = _ => { };
+    [EzIPC] public Action? Abort { get; private set; } = null;
 
     private LifestreamIPC()
     {

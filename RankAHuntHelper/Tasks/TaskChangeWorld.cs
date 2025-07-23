@@ -1,25 +1,27 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ECommons;
 using ECommons.GameHelpers;
+using static RankAHuntHelper.TaskMain;
 
 namespace RankAHuntHelper.Tasks;
 
 internal static class TaskChangeWorlds
-{
-    internal static bool EnqueueChangeWorld(string worldName)
+{    
+    internal static void EnqueueChangeWorld(string worldName)
     {
-        TaskMain.TaskManager.Enqueue(() => S.Lifestream.TpChangeWorld(worldName));
-        TaskMain.TaskManager.Enqueue(() => CheckWorldVisit(worldName));
-        return true;
-    }   
+        ChangeTaskState(TaskState.Teleport);
+        T.ChangeStateString("跨服中...");
+        T.TaskManager.Enqueue(() => S.Lifestream.TpChangeWorld(worldName));
+        T.TaskManager.Enqueue(() => CheckWorldVisit(worldName));
+    }
 
     private static bool CheckWorldVisit(string worldName)
     {
-        if (Player.CurrentWorld == worldName && Player.Available) return true;
+        if (Player.CurrentWorld == worldName && Player.Available && !Player.IsBusy)
+        {
+            T.ChangeStateString("跨服完成");
+            TaskMain.ChangeTaskState(TaskMain.TaskState.ChangeMap);
+            return true;
+        }
+        T.ChangeStateString("跨服中...");
         return false;
     }
 }

@@ -2,7 +2,6 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using RankAHuntHelper.StaticData;
-using RankAHuntHelper.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;

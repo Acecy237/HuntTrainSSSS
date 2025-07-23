@@ -15,6 +15,5 @@ public class Configuration : IPluginConfiguration
     public string selectedWorldName { get; set; } = string.Empty;
     public Dictionary<Expansion, bool> SelectedExpansion { get; set; } = new();
     public Dictionary<Expansion, Dictionary<string, bool>> SelectedMap { get; set; } = new();
-
     public void Save() => Svc.PluginInterface.SavePluginConfig(this);
 }

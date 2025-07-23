@@ -13,7 +13,7 @@ using static RankAHuntHelper.StaticData.ExpansionData;
 namespace RankAHuntHelper;
 
 public static class DataManager
-{   
+{
     public static class PlayerLocation
     {
         public static uint DcId { get; private set; } = 0;
@@ -35,7 +35,7 @@ public static class DataManager
             Svc.Framework.Update += OnFrameworkUpdate;
             Svc.ClientState.TerritoryChanged += OnTerritoryChanged;
         }
-         
+
         public static void Dispose()
         {
             Svc.Framework.Update -= OnFrameworkUpdate;
