@@ -104,6 +104,7 @@ internal static class TaskMain
             if (MapList.Count == 0)
             {
                 Svc.Chat.PrintError("没有选择地图");
+                ChangeStateString("没有选择地图");
                 ResetTask();
                 return false;
             }
@@ -112,7 +113,8 @@ internal static class TaskMain
             {
                 if (string.IsNullOrEmpty(TargetWorld))
                 {
-                    Svc.Chat.PrintError("没有选择世界");
+                    Svc.Chat.PrintError("没有选择服务器");
+                    ChangeStateString("没有选择服务器");
                     ResetTask();
                     return false;
                 }
@@ -251,7 +253,6 @@ internal static class TaskMain
                 ResetTask();
                 ChangeTaskState(TaskState.Idle);
                 break;
-
         }
     }
 
@@ -355,8 +356,7 @@ internal static class TaskMain
         }
         var targetPoint = TaskData.CurrentPointsList[TaskData.CurrentPointIndex];
         var target = new Vector3(targetPoint.X, targetPoint.Y, targetPoint.Z);
-        var distance = Player.DistanceTo(target);
-        if (distance < 70f || CheckAndUpdateEliteMark())
+        if (Player.DistanceTo(target) < 70f || CheckAndUpdateEliteMark())
         {
             TaskData.LastFlyTarget = null;
             TaskData.CurrentPointIndex ++;
@@ -371,7 +371,7 @@ internal static class TaskMain
         {
             Flyto(target.X, target.Y, target.Z);
             TaskData.LastFlyTarget = target;
-            ChangeStateString("飞行到下一个点");            
+            ChangeStateString("搜索A怪中");            
         }
     }
 
@@ -453,10 +453,8 @@ internal static class TaskMain
                 remaining.Remove(next);
                 current = next;
             }
-
             return path;
         }
-
         private static List<(float X, float Y, float Z)> Apply2Opt(List<(float X, float Y, float Z)> path)
         {
             bool improved = true;
@@ -480,7 +478,6 @@ internal static class TaskMain
             }
             return path;
         }
-
         public static double Distance((float X, float Y, float Z) a, (float X, float Y, float Z) b)
         {
             var dx = a.X - b.X;

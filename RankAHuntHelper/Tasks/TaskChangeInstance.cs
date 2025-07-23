@@ -53,6 +53,16 @@ public static class TaskChangeInstance
                 return true;
             }
         });
+        T.TaskManager.Enqueue(() =>Chat.ExecuteCommand("/ac 随机坐骑"));
+        T.TaskManager.Enqueue(() =>
+        {
+            if (!Player.IsCasting)
+            {
+                Chat.ExecuteCommand("/gaction 跳跃");
+                return true;
+            }
+            return false;
+        });
         T.TaskManager.Enqueue(() =>
         {
             if (S.Lifestream.GetCurrentInstance() == num) return true;

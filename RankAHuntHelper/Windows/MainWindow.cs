@@ -51,15 +51,8 @@ public class MainWindow : Window, IDisposable
     private static void DrawInfoSection()
     {
         ImGui.PushTextWrapPos();
-        ImGui.TextUnformatted("绝伊甸自动加低保\n依赖插件: AEassist, SplatoonX, Nyadraw, kodakkuAssist");
+        ImGui.TextUnformatted("我找怪，你开/n依赖插件: LifeStream, Teleporter, Vnavmesh, HuntHelper");
         ImGui.PopTextWrapPos();
-        ImGui.Separator();
-        ImGui.TextUnformatted($"角色当前状态");
-        ImGui.TextUnformatted($"数据中心: {D.PlayerLocation.DcName}");
-        ImGui.TextUnformatted($"服务器: {D.PlayerLocation.WorldName}");
-        ImGui.TextUnformatted($"地图: {D.PlayerLocation.MapName}");
-        ImGui.TextUnformatted($"地图ID: {D.PlayerLocation.MapId}");
-        ImGui.TextUnformatted($"分线: {D.PlayerLocation.InstanceName}");
         ImGui.Separator();
         ImGui.Text($"插件状态: {(TaskMain.IsRunning ? "运行中" : "未运行")}");
         ImGui.Text($"当前任务: {TaskMain.stateString}");
